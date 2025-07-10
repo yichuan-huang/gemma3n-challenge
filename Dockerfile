@@ -5,12 +5,13 @@ RUN apt-get update && \
     curl \
     ca-certificates \
     procps \
+    git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://ollama.com/install.sh | sh
 
-RUN pip install langchain langchain-ollama
+RUN pip install ollama langchain langchain-ollama pillow
 
 RUN ollama serve & \
     sleep 10 && \
