@@ -1,4 +1,8 @@
 numpy
-torch>=2.1.0
-transformers
+pillow
+torch
+torchvision
+transformers >= 4.53
+accelerate
+timm
 gradio
