@@ -9,15 +9,14 @@ class Config:
     MODEL_NAME: str = "google/gemma-3n-E2B-it"
 
     # Generation parameters
-    MAX_NEW_TOKENS: int = 256
-    TEMPERATURE: float = 0.3
-    DO_SAMPLE: bool = True
-    TOP_P: float = 0.8
-    TOP_K: int = 40
+    MAX_NEW_TOKENS: int = 512
 
     # Device configuration
     TORCH_DTYPE: str = torch.bfloat16
-    DEVICE_MAP: str = "auto"
+    if torch.cuda.is_available():
+        DEVICE_MAP: str = "cuda:0"  # Use first GPU if available
+    else:
+        DEVICE_MAP: str = "cpu"
 
     # Image preprocessing
     IMAGE_SIZE: int = 512 

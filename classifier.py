@@ -1,4 +1,4 @@
-from transformers import AutoProcessor, Gemma3nForConditionalGeneration
+from transformers import AutoProcessor, AutoModelForImageTextToText
 from PIL import Image
 import torch
 import logging
@@ -34,11 +34,11 @@ class GarbageClassifier:
             )
 
             # Load model
-            self.model = Gemma3nForConditionalGeneration.from_pretrained(
+            self.model = AutoModelForImageTextToText.from_pretrained(
                 self.config.MODEL_NAME,
                 torch_dtype=self.config.TORCH_DTYPE,
                 device_map=self.config.DEVICE_MAP,
-            ).eval()
+            )
 
             self.logger.info("Model loaded successfully")
 
@@ -138,40 +138,18 @@ class GarbageClassifier:
                 tokenize=True,
                 return_dict=True,
                 return_tensors="pt",
-)
-
-            # Move inputs to model device and set dtype
-            inputs = inputs.to(self.model.device, dtype=self.model.dtype)
+            ).to(self.model.device, dtype=self.model.dtype)
             input_len = inputs["input_ids"].shape[-1]
 
-            # Generate response
-            with torch.no_grad():
-                generation_kwargs = {
-                    "max_new_tokens": self.config.MAX_NEW_TOKENS,
-                    "pad_token_id": self.processor.tokenizer.eos_token_id,
-                    "disable_compile": True,  # Important for stability
-                }
-
-                if self.config.DO_SAMPLE:
-                    generation_kwargs.update(
-                        {
-                            "do_sample": True,
-                            "temperature": self.config.TEMPERATURE,
-                            "top_p": self.config.TOP_P,
-                            "top_k": self.config.TOP_K,
-                        }
-                    )
-                else:
-                    generation_kwargs["do_sample"] = False
-
-                outputs = self.model.generate(**inputs, **generation_kwargs)
-
-            # Decode response
+            outputs = self.model.generate(
+                **inputs,
+                max_new_tokens=self.config.MAX_NEW_TOKENS,
+                disable_compile=True,
+            )
             response = self.processor.batch_decode(
                 outputs[:, input_len:],
                 skip_special_tokens=True,
-                clean_up_tokenization_spaces=True,
-            )[0]
+            )
 
             # Extract classification from response
             classification = self._extract_classification(response)
