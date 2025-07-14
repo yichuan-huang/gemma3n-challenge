@@ -19,12 +19,7 @@ class Config:
         DEVICE_MAP: str = "cpu"
 
     # Image preprocessing
-    IMAGE_SIZE: int = 512 
+    IMAGE_SIZE: int = 512
 
     # Hugging Face token
     HF_TOKEN: str = os.getenv("HF_TOKEN", "")
-
-    # Gradio configuration
-    GRADIO_SHARE: bool = False
-    GRADIO_PORT: int = 7860
-    GRADIO_SERVER_NAME: str = "0.0.0.0"

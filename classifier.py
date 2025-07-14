@@ -113,10 +113,11 @@ class GarbageClassifier:
             messages = [
                 {
                     "role": "system",
-                    "content": [{
-                        "type" : "text",
-                        "text": self.knowledge.get_system_prompt(),
-                    }
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": self.knowledge.get_system_prompt(),
+                        }
                     ],
                 },
                 {
@@ -149,7 +150,7 @@ class GarbageClassifier:
             response = self.processor.batch_decode(
                 outputs[:, input_len:],
                 skip_special_tokens=True,
-            )
+            )[0]
 
             # Extract classification from response
             classification = self._extract_classification(response)

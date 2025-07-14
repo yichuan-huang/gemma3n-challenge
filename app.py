@@ -90,8 +90,4 @@ with gr.Blocks(title="Garbage Classification System") as demo:
     )
 
 if __name__ == "__main__":
-    demo.launch(
-        share=config.GRADIO_SHARE,
-        server_name=config.GRADIO_SERVER_NAME,
-        server_port=config.GRADIO_PORT,
-    )
+    demo.launch()
