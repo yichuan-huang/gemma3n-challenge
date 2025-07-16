@@ -10,4 +10,16 @@ pinned: false
 license: mit
 ---
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+# Garbage Classification System
+
+A Gradio app for classifying garbage into 4 categories using Gemma-3n model.
+
+## Usage
+1. Upload an image.
+2. Click "Classify Garbage" or wait for auto-classification.
+
+## Categories
+- Recyclable Waste
+- Food/Kitchen Waste
+- Hazardous Waste
+- Other Waste
