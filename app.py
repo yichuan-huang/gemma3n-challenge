@@ -1,9 +1,3 @@
-import gradio as gr
-from PIL import Image
-import os
-from classifier import GarbageClassifier
-from config import Config
-
 # Check if running in Hugging Face Spaces environment
 try:
     import spaces
@@ -13,6 +7,13 @@ try:
 except ImportError:
     HF_SPACES = False
     print("Running in local environment")
+
+import gradio as gr
+from PIL import Image
+import os
+from classifier import GarbageClassifier
+from config import Config
+
 
 # Initialize classifier
 config = Config()
@@ -112,8 +113,4 @@ with gr.Blocks(title="Garbage Classification System") as demo:
     )
 
 if __name__ == "__main__":
-    # Set appropriate launch parameters based on environment
-    if HF_SPACES:
-        demo.launch()
-    else:
-        demo.launch(share=True)
+    demo.launch()
