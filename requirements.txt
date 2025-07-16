@@ -6,3 +6,4 @@ transformers >= 4.53
 accelerate
 timm
 gradio
+spaces
