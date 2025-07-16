@@ -1,8 +1,19 @@
+# Check if running in Hugging Face Spaces environment
+try:
+    import spaces
+
+    HF_SPACES = True
+    print("Running in Hugging Face Spaces environment")
+except ImportError:
+    HF_SPACES = False
+    print("Running in local environment")
+
 import gradio as gr
 from PIL import Image
 import os
 from classifier import GarbageClassifier
 from config import Config
+
 
 # Initialize classifier
 config = Config()
@@ -14,9 +25,9 @@ classifier.load_model()
 print("Model loaded successfully!")
 
 
-def classify_garbage(image):
+def classify_garbage_impl(image):
     """
-    Classify garbage in uploaded image
+    Actual classification implementation
     """
     if image is None:
         return "Please upload an image", "No image provided"
@@ -26,6 +37,15 @@ def classify_garbage(image):
         return classification, full_response
     except Exception as e:
         return "Error", f"Classification failed: {str(e)}"
+
+
+# Apply GPU decorator based on environment
+if HF_SPACES:
+    classify_garbage = spaces.GPU(classify_garbage_impl)
+    print("GPU decorator applied for Hugging Face Spaces")
+else:
+    classify_garbage = classify_garbage_impl
+    print("Running without GPU decorator")
 
 
 def get_example_images():
@@ -66,11 +86,14 @@ with gr.Blocks(title="Garbage Classification System") as demo:
 
     # Category information
     with gr.Accordion("📋 Garbage Categories Information", open=False):
-        category_info = classifier.get_categories_info()
-        for category, description in category_info.items():
-            gr.Markdown(f"**{category}**: {description}")
+        try:
+            category_info = classifier.get_categories_info()
+            for category, description in category_info.items():
+                gr.Markdown(f"**{category}**: {description}")
+        except Exception as e:
+            gr.Markdown(f"Categories information not available: {str(e)}")
 
-    # Examples
+    # Examples section
     examples = get_example_images()
     if examples:
         gr.Examples(examples=examples, inputs=image_input, label="Example Images")
