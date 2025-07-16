@@ -4,6 +4,13 @@ import os
 from classifier import GarbageClassifier
 from config import Config
 
+# Detect whether is in Huggingface Space
+try:
+    import spaces
+    HF_SPACES = True
+except ImportError:
+    HF_SPACES = False
+
 # Initialize classifier
 config = Config()
 classifier = GarbageClassifier(config)
