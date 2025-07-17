@@ -268,62 +268,94 @@ class GarbageClassifier:
     def _extract_reasoning(self, response: str) -> str:
         """Extract only the reasoning content, removing all formatting markers and classification info"""
         import re
-
+        
         # Remove all formatting markers
         cleaned_response = response.replace("**Classification**:", "")
         cleaned_response = cleaned_response.replace("**Reasoning**:", "")
-        cleaned_response = re.sub(
-            r"\*\*.*?\*\*:", "", cleaned_response
-        )  # Remove any **text**: patterns
-        cleaned_response = cleaned_response.replace(
-            "**", ""
-        )  # Remove remaining ** markers
-
+        cleaned_response = re.sub(r'\*\*.*?\*\*:', '', cleaned_response)  # Remove any **text**: patterns
+        cleaned_response = cleaned_response.replace("**", "")  # Remove remaining ** markers
+        
         # Remove category names that might appear at the beginning
         categories = self.knowledge.get_categories()
         for category in categories:
             if cleaned_response.strip().startswith(category):
                 cleaned_response = cleaned_response.replace(category, "", 1)
                 break
-
+        
+        # Remove common material names that might appear at the beginning
+        material_names = [
+            "Glass", "Plastic", "Metal", "Paper", "Cardboard", "Aluminum", 
+            "Steel", "Iron", "Tin", "Foil", "Wood", "Ceramic", "Fabric",
+            "Recyclable Waste", "Food/Kitchen Waste", "Hazardous Waste", "Other Waste"
+        ]
+        
+        # Clean the response
+        cleaned_response = cleaned_response.strip()
+        
+        # Remove material names at the beginning
+        for material in material_names:
+            if cleaned_response.startswith(material):
+                # Remove the material name and any following punctuation/whitespace
+                cleaned_response = cleaned_response[len(material):].lstrip(" .,;:")
+                break
+        
         # Split into sentences and clean up
         sentences = []
-
-        # Split by common sentence endings
-        parts = re.split(r"[.!?]\s+", cleaned_response)
-
-        for part in parts:
+        
+        # Split by common sentence endings, but keep the endings
+        parts = re.split(r'([.!?])\s+', cleaned_response)
+        
+        # Rejoin parts to maintain sentence structure
+        reconstructed_parts = []
+        for i in range(0, len(parts), 2):
+            if i < len(parts):
+                sentence = parts[i]
+                if i + 1 < len(parts):
+                    sentence += parts[i + 1]  # Add the punctuation back
+                reconstructed_parts.append(sentence)
+        
+        for part in reconstructed_parts:
             part = part.strip()
             if not part:
                 continue
-
-            # Skip parts that are just category names
-            if part in categories:
+                
+            # Skip parts that are just category names or material names
+            if part in categories or part.rstrip(".,;:") in material_names:
                 continue
-
-            # Skip parts that start with category names
+                
+            # Skip parts that start with category names or material names
             is_category_line = False
-            for category in categories:
-                if part.startswith(category):
+            for item in categories + material_names:
+                if part.startswith(item):
                     is_category_line = True
                     break
-
+            
             if is_category_line:
                 continue
-
+                
             # Clean up the sentence
-            part = re.sub(
-                r"^[A-Za-z\s]+:", "", part
-            ).strip()  # Remove "Category:" type prefixes
-
+            part = re.sub(r'^[A-Za-z\s]+:', '', part).strip()  # Remove "Category:" type prefixes
+            
             if part and len(part) > 3:  # Only keep meaningful content
                 sentences.append(part)
-
-        # Join sentences and ensure proper punctuation
-        reasoning = ". ".join(sentences)
-        if reasoning and not reasoning.endswith((".", "!", "?")):
-            reasoning += "."
-
+        
+        # Join sentences
+        reasoning = ' '.join(sentences)
+        
+        # Final cleanup - remove any remaining standalone material words at the beginning
+        reasoning_words = reasoning.split()
+        if reasoning_words and reasoning_words[0] in [m.lower() for m in material_names]:
+            reasoning_words = reasoning_words[1:]
+            reasoning = ' '.join(reasoning_words)
+        
+        # Ensure proper capitalization
+        if reasoning:
+            reasoning = reasoning[0].upper() + reasoning[1:] if len(reasoning) > 1 else reasoning.upper()
+            
+            # Ensure proper punctuation
+            if not reasoning.endswith(('.', '!', '?')):
+                reasoning += '.'
+                
         return reasoning if reasoning else "Analysis not available"
 
     def get_categories_info(self):
