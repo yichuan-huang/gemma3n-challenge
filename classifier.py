@@ -126,7 +126,7 @@ class GarbageClassifier:
                         {"type": "image", "image": processed_image},
                         {
                             "type": "text",
-                            "text": "Please classify the garbage in this image and explain your reasoning.",
+                            "text": "Please classify what you see in this image. If it shows garbage/waste items, classify them according to the garbage classification standards. If it shows people, living things, or other non-waste items, classify it as 'Unable to classify' and explain why it's not garbage.",
                         },
                     ],
                 },
@@ -174,8 +174,33 @@ class GarbageClassifier:
         # Convert response to lowercase for matching
         response_lower = response.lower()
 
-        # Look for exact category matches first
-        for category in categories:
+        # First check for "Unable to classify" indicators
+        unable_indicators = [
+            "unable to classify",
+            "cannot classify",
+            "not garbage",
+            "not waste",
+            "person",
+            "people",
+            "human",
+            "face",
+            "living",
+            "alive",
+            "animal",
+            "functioning",
+            "in use",
+            "working",
+            "furniture",
+            "appliance",
+            "electronic device",
+        ]
+
+        if any(indicator in response_lower for indicator in unable_indicators):
+            return "Unable to classify"
+
+        # Look for exact category matches (excluding "Unable to classify" since we handled it above)
+        waste_categories = [cat for cat in categories if cat != "Unable to classify"]
+        for category in waste_categories:
             if category.lower() in response_lower:
                 return category
 
@@ -231,6 +256,7 @@ class GarbageClassifier:
             if any(keyword in response_lower for keyword in keywords):
                 return category
 
+        # If no clear classification found, default to "Unable to classify"
         return "Unable to classify"
 
     def _format_response(self, classification: str, full_response: str) -> str:
