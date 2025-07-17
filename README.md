@@ -24,11 +24,11 @@ The application uses a pre-trained Vision Transformer (ViT) model to perform the
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/your-username/waste-classification-app.git
+    git clone https://github.com/yichuan-huang/gemma3n-challenge
     ```
 2.  Navigate to the project directory:
     ```bash
-    cd waste-classification-app
+    cd gemma3n-challenge
     ```
 3.  Install the required dependencies:
     ```bash
