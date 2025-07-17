@@ -94,7 +94,7 @@ class GarbageClassifier:
             image: PIL Image or path to image file
 
         Returns:
-            Tuple of (classification_result, full_response)
+            Tuple of (classification_result, detailed_analysis)
         """
         if self.model is None or self.processor is None:
             raise RuntimeError("Model not loaded. Call load_model() first.")
@@ -155,10 +155,10 @@ class GarbageClassifier:
             # Extract classification from response
             classification = self._extract_classification(response)
 
-            # Create formatted response
-            formatted_response = self._format_response(classification, response)
+            # Extract reasoning from response
+            reasoning = self._extract_reasoning(response)
 
-            return classification, formatted_response
+            return classification, reasoning
 
         except Exception as e:
             self.logger.error(f"Error during classification: {str(e)}")
@@ -168,108 +168,174 @@ class GarbageClassifier:
             return "Error", f"Classification failed: {str(e)}"
 
     def _extract_classification(self, response: str) -> str:
-        """Extract the main classification from the response"""
-        categories = self.knowledge.get_categories()
-
-        # Convert response to lowercase for matching
+        """Extract the main classification from the response with enhanced logic"""
         response_lower = response.lower()
 
-        # First check for "Unable to classify" indicators
-        unable_indicators = [
+        # Strong indicators that this is NOT garbage - check these first
+        non_garbage_indicators = [
             "unable to classify",
             "cannot classify",
             "not garbage",
             "not waste",
+            "not trash",
             "person",
             "people",
             "human",
             "face",
+            "man",
+            "woman",
             "living",
             "alive",
             "animal",
+            "pet",
+            "dog",
+            "cat",
             "functioning",
             "in use",
             "working",
+            "operational",
             "furniture",
             "appliance",
             "electronic device",
+            "building",
+            "house",
+            "room",
+            "landscape",
+            "vehicle",
+            "car",
+            "truck",
+            "bike",
+            "elon musk",
+            "celebrity",
+            "famous person",
+            "portrait",
+            "photo of a person",
         ]
 
-        if any(indicator in response_lower for indicator in unable_indicators):
+        # Check for explicit statements about not being garbage
+        non_garbage_phrases = [
+            "this is not",
+            "this does not appear to be",
+            "not intended to be discarded",
+            "not something that should be",
+            "appears to be a person",
+            "shows a person",
+            "image of a person",
+            "human being",
+            "living creature",
+        ]
+
+        # First priority: Check for strong non-garbage indicators
+        if any(indicator in response_lower for indicator in non_garbage_indicators):
             return "Unable to classify"
 
-        # Look for exact category matches (excluding "Unable to classify" since we handled it above)
+        # Second priority: Check for phrases indicating it's not garbage
+        if any(phrase in response_lower for phrase in non_garbage_phrases):
+            return "Unable to classify"
+
+        # Third priority: Look for reasoning that explicitly says it's not waste/garbage
+        reasoning_against_waste = [
+            "cannot be classified as waste",
+            "should not be classified as",
+            "not appropriate to classify",
+            "does not belong to any waste category",
+            "is not waste material",
+        ]
+
+        if any(phrase in response_lower for phrase in reasoning_against_waste):
+            return "Unable to classify"
+
+        # Only if none of the above conditions are met, then look for garbage categories
+        categories = self.knowledge.get_categories()
         waste_categories = [cat for cat in categories if cat != "Unable to classify"]
+
+        # Look for exact category matches
         for category in waste_categories:
             if category.lower() in response_lower:
+                # Double check - make sure the context is positive
+                category_index = response_lower.find(category.lower())
+                context_before = response_lower[
+                    max(0, category_index - 50) : category_index
+                ]
+                context_after = response_lower[category_index : category_index + 50]
+
+                # If there are negation words around the category, skip it
+                negation_words = [
+                    "not",
+                    "cannot",
+                    "unable",
+                    "doesn't",
+                    "isn't",
+                    "won't",
+                    "shouldn't",
+                ]
+                if any(
+                    neg in context_before or neg in context_after
+                    for neg in negation_words
+                ):
+                    continue
+
                 return category
 
-        # Look for key terms if no exact match
+        # Look for key terms only if no explicit non-garbage indicators were found
         category_keywords = {
             "Recyclable Waste": [
                 "recyclable",
                 "recycle",
-                "plastic",
-                "paper",
-                "metal",
-                "glass",
-                "bottle",
-                "can",
-                "aluminum",
-                "cardboard",
+                "plastic bottle",
+                "aluminum can",
+                "cardboard box",
+                "glass bottle",
+                "metal can",
             ],
             "Food/Kitchen Waste": [
-                "food",
-                "kitchen",
-                "organic",
-                "fruit",
-                "vegetable",
+                "food scraps",
+                "fruit peel",
+                "vegetable waste",
                 "leftovers",
-                "scraps",
-                "peel",
-                "core",
-                "bone",
+                "organic waste",
+                "kitchen waste",
             ],
             "Hazardous Waste": [
-                "hazardous",
-                "dangerous",
-                "toxic",
                 "battery",
-                "chemical",
-                "medicine",
-                "paint",
-                "pharmaceutical",
+                "chemical container",
+                "medicine bottle",
+                "paint can",
+                "toxic material",
             ],
-            "Other Waste": [
-                "other",
-                "general",
-                "trash",
-                "garbage",
-                "waste",
-                "cigarette",
-                "ceramic",
-                "dust",
-            ],
+            "Other Waste": ["cigarette butt", "ceramic piece", "dust", "general waste"],
         }
 
         for category, keywords in category_keywords.items():
             if any(keyword in response_lower for keyword in keywords):
                 return category
 
-        # If no clear classification found, default to "Unable to classify"
+        # Default to "Unable to classify" if nothing clear is found
         return "Unable to classify"
 
-    def _format_response(self, classification: str, full_response: str) -> str:
-        """Format the response with classification and reasoning"""
-        if not full_response.strip():
-            return f"**Classification**: {classification}\n**Reasoning**: No detailed analysis available."
+    def _extract_reasoning(self, response: str) -> str:
+        """Extract just the reasoning part from the response"""
+        # Remove formatting markers
+        cleaned_response = response.replace("**Classification**:", "")
+        cleaned_response = cleaned_response.replace("**Reasoning**:", "")
+        cleaned_response = cleaned_response.replace("**", "")
 
-        # If response already contains structured format, return as is
-        if "**Classification**" in full_response and "**Reasoning**" in full_response:
-            return full_response
+        # Split by common separators and try to find the reasoning part
+        lines = cleaned_response.split("\n")
+        reasoning_lines = []
 
-        # Otherwise, format it
-        return f"**Classification**: {classification}\n\n**Reasoning**: {full_response}"
+        skip_keywords = ["classification", "category"]
+
+        for line in lines:
+            line = line.strip()
+            if line and not any(keyword in line.lower() for keyword in skip_keywords):
+                reasoning_lines.append(line)
+
+        if reasoning_lines:
+            return " ".join(reasoning_lines)
+
+        # Fallback: return the whole response cleaned up
+        return cleaned_response.strip()
 
     def get_categories_info(self):
         """Get information about all categories"""
