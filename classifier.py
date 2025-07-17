@@ -170,133 +170,99 @@ class GarbageClassifier:
     def _extract_classification(self, response: str) -> str:
         """Extract the main classification from the response"""
         response_lower = response.lower()
-
-        # First check for explicit "Unable to classify" statements
+        
+        # First, look for positive waste category indicators
+        # Check exact category matches first
+        categories = self.knowledge.get_categories()
+        waste_categories = [cat for cat in categories if cat != "Unable to classify"]
+        
+        for category in waste_categories:
+            if category.lower() in response_lower:
+                # Make sure it's not in a negative context
+                category_index = response_lower.find(category.lower())
+                context_before = response_lower[max(0, category_index-30):category_index]
+                
+                # Only skip if there's a clear negation right before
+                if not any(neg in context_before[-10:] for neg in ["not", "cannot", "isn't", "doesn't"]):
+                    return category
+        
+        # Look for strong recyclable indicators
+        recyclable_indicators = [
+            "recyclable", "recycle", "aluminum", "plastic", "glass", "metal",
+            "foil", "can", "bottle", "cardboard", "paper", "tin", "steel", "iron"
+        ]
+        
+        if any(indicator in response_lower for indicator in recyclable_indicators):
+            # Check if it's explicitly said to be recyclable
+            recyclable_phrases = [
+                "recyclable", "can be recycled", "made of recyclable",
+                "recyclable material", "recyclable aluminum", "recyclable plastic"
+            ]
+            if any(phrase in response_lower for phrase in recyclable_phrases):
+                return "Recyclable Waste"
+            
+            # Check for specific materials
+            if any(material in response_lower for material in ["aluminum", "foil", "metal"]):
+                return "Recyclable Waste"
+            if any(material in response_lower for material in ["plastic", "bottle"]):
+                return "Recyclable Waste"
+            if any(material in response_lower for material in ["glass", "cardboard", "paper"]):
+                return "Recyclable Waste"
+        
+        # Look for food waste indicators
+        food_indicators = [
+            "food", "fruit", "vegetable", "organic", "kitchen waste",
+            "peel", "core", "scraps", "leftovers"
+        ]
+        if any(indicator in response_lower for indicator in food_indicators):
+            return "Food/Kitchen Waste"
+        
+        # Look for hazardous waste indicators
+        hazardous_indicators = [
+            "battery", "chemical", "medicine", "paint", "toxic", "hazardous"
+        ]
+        if any(indicator in response_lower for indicator in hazardous_indicators):
+            return "Hazardous Waste"
+        
+        # Look for other waste indicators
+        other_waste_indicators = [
+            "cigarette", "ceramic", "dust", "diaper", "tissue", "other waste"
+        ]
+        if any(indicator in response_lower for indicator in other_waste_indicators):
+            return "Other Waste"
+        
+        # Only classify as "Unable to classify" if there are explicit indicators
         unable_phrases = [
             "unable to classify",
             "cannot classify",
-            "cannot be classified",
+            "cannot be classified as waste",
+            "not garbage", "not waste", "not trash"
         ]
-
+        
         if any(phrase in response_lower for phrase in unable_phrases):
             return "Unable to classify"
-
+        
         # Check for non-garbage items (people, living things, etc.)
         non_garbage_indicators = [
-            "person",
-            "people",
-            "human",
-            "face",
-            "man",
-            "woman",
-            "boy",
-            "girl",
-            "living",
-            "alive",
-            "animal",
-            "pet",
-            "dog",
-            "cat",
-            "bird",
-            "elon musk",
-            "celebrity",
-            "famous person",
-            "portrait",
-            "photo of a person",
-            "human being",
+            "person", "people", "human", "face", "man", "woman",
+            "living", "alive", "animal", "pet",
+            "portrait", "photo of a person"
         ]
-
-        # Check for explicit statements about not being garbage/waste
-        non_waste_phrases = [
-            "not garbage",
-            "not waste",
-            "not trash",
-            "this is not",
-            "does not appear to be waste",
-            "not intended to be discarded",
-            "not something that should be",
-            "appears to be a person",
-            "shows a person",
-            "image of a person",
-        ]
-
-        # Only classify as "Unable to classify" if it's clearly not garbage
+        
         if any(indicator in response_lower for indicator in non_garbage_indicators):
             return "Unable to classify"
-
-        if any(phrase in response_lower for phrase in non_waste_phrases):
-            return "Unable to classify"
-
-        # Now look for waste categories - check exact matches first
-        categories = self.knowledge.get_categories()
-        waste_categories = [cat for cat in categories if cat != "Unable to classify"]
-
-        for category in waste_categories:
-            if category.lower() in response_lower:
-                return category
-
-        # Look for category keywords
-        category_keywords = {
-            "Recyclable Waste": [
-                "recyclable",
-                "recycle",
-                "plastic",
-                "paper",
-                "metal",
-                "glass",
-                "aluminum",
-                "foil",
-                "can",
-                "bottle",
-                "cardboard",
-                "tin",
-                "steel",
-                "iron",
-                "copper",
-                "brass",
-                "recyclable material",
-            ],
-            "Food/Kitchen Waste": [
-                "food",
-                "kitchen",
-                "organic",
-                "fruit",
-                "vegetable",
-                "leftovers",
-                "scraps",
-                "peel",
-                "core",
-                "bone",
-                "food waste",
-                "organic waste",
-            ],
-            "Hazardous Waste": [
-                "hazardous",
-                "dangerous",
-                "toxic",
-                "battery",
-                "chemical",
-                "medicine",
-                "paint",
-                "pharmaceutical",
-                "hazardous waste",
-            ],
-            "Other Waste": [
-                "cigarette",
-                "ceramic",
-                "dust",
-                "diaper",
-                "tissue",
-                "general waste",
-                "other waste",
-            ],
-        }
-
-        for category, keywords in category_keywords.items():
-            if any(keyword in response_lower for keyword in keywords):
-                return category
-
-        # If no clear classification found, default to "Unable to classify"
+        
+        # If we found waste-related content but no clear category, try to infer
+        waste_related = any(word in response_lower for word in [
+            "waste", "trash", "garbage", "discard", "throw", "bin"
+        ])
+        
+        if waste_related:
+            # Default to Other Waste if it's clearly waste but unclear category
+            return "Other Waste"
+        
+        # If no clear classification found and no clear non-waste indicators, 
+        # default to "Unable to classify"
         return "Unable to classify"
 
     def _extract_reasoning(self, response: str) -> str:
