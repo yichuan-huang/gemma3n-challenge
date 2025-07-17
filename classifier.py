@@ -5,6 +5,7 @@ import logging
 from typing import Union, Tuple
 from config import Config
 from knowledge_base import GarbageClassificationKnowledge
+import re
 
 
 class GarbageClassifier:
@@ -86,7 +87,7 @@ class GarbageClassifier:
 
         return processed_image
 
-    def classify_image(self, image: Union[str, Image.Image]) -> Tuple[str, str]:
+    def classify_image(self, image: Union[str, Image.Image]) -> Tuple[str, str, int]:
         """
         Classify garbage in the image
 
@@ -94,7 +95,7 @@ class GarbageClassifier:
             image: PIL Image or path to image file
 
         Returns:
-            Tuple of (classification_result, detailed_analysis)
+            Tuple of (classification_result, detailed_analysis, confidence_score)
         """
         if self.model is None or self.processor is None:
             raise RuntimeError("Model not loaded. Call load_model() first.")
@@ -126,7 +127,7 @@ class GarbageClassifier:
                         {"type": "image", "image": processed_image},
                         {
                             "type": "text",
-                            "text": "Please classify what you see in this image. If it shows garbage/waste items, classify them according to the garbage classification standards. If it shows people, living things, or other non-waste items, classify it as 'Unable to classify' and explain why it's not garbage.",
+                            "text": "Please classify what you see in this image. If it shows garbage/waste items, classify them according to the garbage classification standards. If it shows people, living things, or other non-waste items, classify it as 'Unable to classify' and explain why it's not garbage. Also provide a confidence score from 1-10 indicating how certain you are about your classification.",
                         },
                     ],
                 },
@@ -158,14 +159,87 @@ class GarbageClassifier:
             # Extract reasoning from response
             reasoning = self._extract_reasoning(response)
 
-            return classification, reasoning
+            # Extract confidence score from response
+            confidence_score = self._extract_confidence_score(response, classification)
+
+            return classification, reasoning, confidence_score
 
         except Exception as e:
             self.logger.error(f"Error during classification: {str(e)}")
             import traceback
 
             traceback.print_exc()
-            return "Error", f"Classification failed: {str(e)}"
+            return "Error", f"Classification failed: {str(e)}", 0
+
+
+    def _calculate_confidence_heuristic(self, response_lower: str, classification: str) -> int:
+        """Calculate confidence based on response content and classification type"""
+        base_confidence = 5
+
+        # Confidence indicators (increase confidence)
+        high_confidence_words = ["clearly", "obviously", "definitely", "certainly", "exactly"]
+        medium_confidence_words = ["appears", "seems", "likely", "probably"]
+
+        # Uncertainty indicators (decrease confidence)
+        uncertainty_words = ["might", "could", "possibly", "maybe", "unclear", "difficult"]
+
+        # Adjust based on confidence words
+        for word in high_confidence_words:
+            if word in response_lower:
+                base_confidence += 2
+                break
+
+        for word in medium_confidence_words:
+            if word in response_lower:
+                base_confidence += 1
+                break
+
+        for word in uncertainty_words:
+            if word in response_lower:
+                base_confidence -= 2
+                break
+
+        # Classification-specific adjustments
+        if classification == "Unable to classify":
+            if any(indicator in response_lower for indicator in ["person", "people", "human", "living"]):
+                base_confidence += 1  # High confidence when clearly not waste
+            else:
+                base_confidence -= 1  # Lower confidence for unclear items
+
+        elif classification == "Error":
+            base_confidence = 1
+
+        else:
+            # Check for specific material mentions (increases confidence)
+            specific_materials = ["aluminum", "plastic", "glass", "metal", "cardboard", "paper"]
+            if any(material in response_lower for material in specific_materials):
+                base_confidence += 1
+
+        return min(max(base_confidence, 1), 10)
+
+    def _extract_confidence_score(self, response: str, classification: str) -> int:
+        """Extract confidence score from response or calculate based on classification"""
+        response_lower = response.lower()
+
+        # Look for explicit confidence scores in the response
+        confidence_patterns = [
+            r'confidence[:\s]*(\d+)',
+            r'confident[:\s]*(\d+)',
+            r'certainty[:\s]*(\d+)',
+            r'score[:\s]*(\d+)',
+            r'(\d+)/10',
+            r'(\d+)\s*out\s*of\s*10'
+        ]
+
+        for pattern in confidence_patterns:
+            match = re.search(pattern, response_lower)
+            if match:
+                score = int(match.group(1))
+                return min(max(score, 1), 10)  # Clamp between 1-10
+
+        # If no explicit score found, calculate based on classification indicators
+        return self._calculate_confidence_heuristic(response_lower, classification)
+
 
     def _extract_classification(self, response: str) -> str:
         """Extract the main classification from the response"""
@@ -267,7 +341,6 @@ class GarbageClassifier:
 
     def _extract_reasoning(self, response: str) -> str:
         """Extract only the reasoning content, removing all formatting markers and classification info"""
-        import re
 
         # Remove all formatting markers
         cleaned_response = response.replace("**Classification**:", "")
