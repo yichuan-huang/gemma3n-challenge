@@ -47,6 +47,7 @@ http-client.private.env.json
 
 
 # VSCode
+.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
