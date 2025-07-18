@@ -29,7 +29,7 @@ def classify_garbage_impl(image):
     Actual classification implementation
     """
     if image is None:
-        return "Please upload an image", "No image provided", "N/A"
+        return "Please upload an image", "No image provided"
 
     try:
         classification, full_response, confidence_score = classifier.classify_image(image)
