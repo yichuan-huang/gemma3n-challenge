@@ -14,7 +14,6 @@ import os
 from classifier import GarbageClassifier
 from config import Config
 
-
 # Initialize classifier
 config = Config()
 classifier = GarbageClassifier(config)
@@ -33,11 +32,11 @@ def classify_garbage_impl(image):
         return "Please upload an image", "No image provided"
 
     try:
-        classification, full_response = classifier.classify_image(image)
-        return classification, full_response
+        classification, full_response, confidence_score = classifier.classify_image(image)
+        confidence_display = f"{confidence_score}/10"
+        return classification, full_response, confidence_display
     except Exception as e:
-        return "Error", f"Classification failed: {str(e)}"
-
+        return "Error", f"Classification failed: {str(e)}", "0/10"
 
 # Apply GPU decorator based on environment
 if HF_SPACES:
@@ -78,6 +77,11 @@ with gr.Blocks(title="Garbage Classification System") as demo:
                 placeholder="Upload an image and click classify",
             )
 
+            confidence_output = gr.Textbox(
+                label="Confidence Score",
+                placeholder="Confidence score will appear here",
+            )
+
             full_response_output = gr.Textbox(
                 label="Detailed Analysis",
                 placeholder="Detailed reasoning will appear here",
@@ -102,14 +106,14 @@ with gr.Blocks(title="Garbage Classification System") as demo:
     classify_btn.click(
         fn=classify_garbage,
         inputs=image_input,
-        outputs=[classification_output, full_response_output],
+        outputs=[classification_output, full_response_output, confidence_output]
     )
 
     # Auto-classify on image upload
     image_input.change(
         fn=classify_garbage,
         inputs=image_input,
-        outputs=[classification_output, full_response_output],
+        outputs=[classification_output, full_response_output, confidence_output]
     )
 
 if __name__ == "__main__":
