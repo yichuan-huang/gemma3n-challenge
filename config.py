@@ -6,7 +6,7 @@ from dataclasses import dataclass
 @dataclass
 class Config:
     # Gemma3n model configuration
-    MODEL_NAME: str = "google/gemma-3n-E2B-it"
+    MODEL_NAME: str = "google/gemma-3n-E4B-it"
 
     # Generation parameters
     MAX_NEW_TOKENS: int = 512

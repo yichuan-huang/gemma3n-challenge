@@ -21,7 +21,7 @@ Try the application live on Hugging Face Spaces\!
 
 ## 💡 How it works
 
-The application uses a pre-trained Gemma3n (E2B) model to perform the image classification. The model has been fine-tuned on a dataset of waste images to accurately identify different materials. The disposal information is retrieved from a knowledge base within the application.
+The application uses a pre-trained Gemma3n model to perform the image classification. The model has been fine-tuned on a dataset of waste images to accurately identify different materials. The disposal information is retrieved from a knowledge base within the application.
 
 -----
 

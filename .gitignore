@@ -137,3 +137,6 @@ nohup.out
 
 # Python cache
 __pycache__
+
+# Jupyter Notebook files
+*.ipynb
