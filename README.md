@@ -29,7 +29,7 @@ The application uses a pre-trained Gemma3n (E2B) model to perform the image clas
 
 Explore the model fine-tuning process and the underlying code in our detailed Kaggle Notebook.
 
-**➡️ [Gemma3n Challenge Notebook](https://www.kaggle.com/code/yichuanhuang/gemma3n-challenge)**
+**➡️ [Gemma3n Challenge Notebook](https://www.kaggle.com/code/yichuanhuang/gemma3n-garbage-classification)**
 
 -----
 
