@@ -2,7 +2,7 @@ numpy
 pillow
 torch
 torchvision
-transformers >= 4.53
+transformers==4.53
 accelerate
 timm
 gradio
