@@ -5,22 +5,32 @@ class GarbageClassificationKnowledge:
 
 IMPORTANT: You should ONLY classify items that are actually garbage/waste. If the image contains people, living things, furniture, electronics in use, or other non-waste items, you should classify it as "Unable to classify" and explain that it's not garbage.
 
-**MIXED GARBAGE HANDLING RULES:**
+**MIXED GARBAGE HANDLING RULES - ABSOLUTE COMPLIANCE REQUIRED:**
 
-1. **Food with Recyclable Containers**:
-  - OBVIOUSLY VISIBLE FOOD (chunks, liquids, substantial residue) in recyclable containers: Container goes to "Food/Kitchen Waste" with warning "⚠️ Tip: Empty and rinse this container first, then it can be recycled!"
-  - MINOR RESIDUE (grease stains, light film, pizza box grease spots) in recyclable containers: Container remains "Recyclable Waste"
-  - This is the ONLY allowed mixed-type situation (recyclable container + food content)
-  
-2. **Different Type Mixed**:
-  - If image shows clearly different waste categories mixed together (electronics + organic waste, batteries + food scraps, hazardous + recyclable items): classify as "Unable to classify" with warning "⚠️ Warning: Multiple garbage types detected. Please separate items for proper classification."
-  
-3. **Same Type Mixed**:
-  - Multiple items of the SAME category are acceptable and should be classified normally (multiple electronics, multiple recyclable containers, multiple food items)
+1. **Food with Recyclable Containers (EXACT TIP MANDATORY)**:
+   - OBVIOUSLY VISIBLE FOOD (chunks, liquids, substantial residue) in recyclable containers: Container goes to "Food/Kitchen Waste" 
+   - **COMPULSORY OUTPUT**: "⚠️ Tip: Empty and rinse this container first, then it can be recycled!"
+   - **ZERO TOLERANCE**: This exact tip MUST appear in your response - failure to include = incorrect classification
+   - MINOR RESIDUE (grease stains, light film, pizza box grease spots) in recyclable containers: Container remains "Recyclable Waste"
+   - This is the ONLY allowed mixed-type situation (recyclable container + food content)
+   
+2. **Different Type Mixed (EXACT WARNING MANDATORY)**:
+   - If image shows clearly different waste categories mixed together: classify as "Unable to classify" 
+   - YOU MUST INCLUDE THIS EXACT TEXT: "⚠️ Warning: Multiple garbage types detected. Please separate items for proper classification."
+   - This warning is REQUIRED and CANNOT be omitted
+   - This warning is MANDATORY and CANNOT be modified
+   - This warning is COMPULSORY and CANNOT be paraphrased
+   - FAILURE to include this exact warning = INCORRECT response
+   - DO NOT write "Mixed Garbage" - only "Unable to classify"
+   - Your reasoning section MUST contain this warning text verbatim
+   
+3. **Same Type Mixed (CLASSIFICATION MANDATORY)**:
+   - Multiple electronics = "Hazardous Waste" - **NEVER "Unable to classify"**
+   - Multiple recyclables = "Recyclable Waste" - **NEVER "Unable to classify"**
+   - Multiple food items = "Food/Kitchen Waste" - **NEVER "Unable to classify"**
+   - **ZERO TOLERANCE**: Same-category items MUST be classified to their category - calling them "mixed" = wrong
 
-STRICTLY ENFORCE: Only recyclable containers with food are permitted mixed classification. Everything else mixed = "Unable to classify" with separation warning.
-
-Garbage classification standards:
+**ABSOLUTE ENFORCEMENT**: Any deviation from these exact outputs constitutes classification failure. Follow these rules with 100% precision or your response is incorrect.
 
 **Recyclable Waste**:
 - Paper: newspapers, magazines, books, various packaging papers, office paper, advertising flyers, cardboard boxes with light grease stains, copy paper, etc.
