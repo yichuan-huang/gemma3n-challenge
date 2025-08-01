@@ -224,6 +224,7 @@ class GarbageClassifier:
 
         # Look for explicit confidence scores in the response
         confidence_patterns = [
+            r'\*\*confidence score\*\*[:\s]*(\d+)',  # For **Confidence Score**: format
             r'confidence[:\s]*(\d+)',
             r'confident[:\s]*(\d+)',
             r'certainty[:\s]*(\d+)',
@@ -242,139 +243,58 @@ class GarbageClassifier:
         return self._calculate_confidence_heuristic(response_lower, classification)
 
     def _extract_classification(self, response: str) -> str:
-        """Extract the main classification from the response with STRICT mixed garbage enforcement"""
+        """Extract the main classification from the response - trust Gemma 3n intelligence more"""
         response_lower = response.lower()
 
-        # STRICT MIXED GARBAGE ENFORCEMENT - Catch ANY mixed scenario
-
-        # 1. Explicit mixed garbage phrases
-        explicit_mixed_phrases = [
-            "multiple garbage types",
-            "multiple different",
-            "different types of garbage",
-            "various items",
-            "mixed items",
-            "several different",
-            "collection of mixed items",
-            "mixture of items",
-            "variety of items",
-            "separate items",
-            "please separate"
-        ]
-
-        if any(phrase in response_lower for phrase in explicit_mixed_phrases):
-            return "Unable to classify"
-
-        # 2. Language patterns that indicate multiple items/uncertainty about classification
-        uncertainty_patterns = [
-            "appears to be containers",
-            "what appears to be",
-            "including what appears",
-            "various colors and textures",
-            "don't clearly fall into a single",
-            "without further detail",
-            "not possible to definitively classify",
-            "more information",
-            "can't determine",
-            "difficult to identify",
-            "unclear category",
-            "mixed materials"
-        ]
-
-        if any(pattern in response_lower for pattern in uncertainty_patterns):
-            return "Unable to classify"
-
-        # 3. Multiple container/item indicators
-        multiple_item_indicators = [
-            "containers (", "bottles, cans", "bags, and", "items, including",
-            "bottles and", "cans and", "containers and", "bags and",
-            "plastic bottles, cans", "various containers"
-        ]
-
-        if any(indicator in response_lower for indicator in multiple_item_indicators):
-            return "Unable to classify"
-
-        # 4. Count different item types mentioned
-        item_types = [
-            "bottle", "can", "container", "bag", "box", "wrapper",
-            "jar", "cup", "plate", "bowl", "package"
-        ]
-
-        item_count = sum(1 for item_type in item_types if item_type in response_lower)
-        if item_count >= 3:  # If 3+ different container types mentioned, it's mixed
-            return "Unable to classify"
-
-        # ONLY EXCEPTION: Single recyclable container with visible food content
-        recyclable_container_indicators = ["container", "bottle", "can", "jar", "box", "wrapper"]
-        food_content_indicators = [
-            "food residue", "food content", "food inside", "visible food",
-            "remains", "leftovers", "scraps inside", "not empty", "not rinsed"
-        ]
-        recyclable_material_indicators = ["plastic", "aluminum", "glass", "metal", "cardboard"]
-
-        # Check for recycling tip warning
-        has_recycling_tip = any(tip in response_lower for tip in [
-            "tip: empty and rinse",
-            "empty and rinse this container",
-            "clean first", "rinse first"
-        ])
-
-        # ONLY allow Food/Kitchen classification for single contaminated container
-        has_single_container = any(indicator in response_lower for indicator in recyclable_container_indicators)
-        has_food_content = any(indicator in response_lower for indicator in food_content_indicators)
-        has_recyclable_material = any(indicator in response_lower for indicator in recyclable_material_indicators)
-
-        # Must be single item (not multiple) and contaminated
-        if (has_single_container and has_food_content and
-                (has_recyclable_material or has_recycling_tip) and
-                item_count <= 1):  # Only single container
-            return "Food/Kitchen Waste"
-
-        # Now proceed with normal classification for single, clear items
+        # Primary: Trust explicit category mentions from Gemma 3n
         categories = self.knowledge.get_categories()
-        waste_categories = [cat for cat in categories if cat != "Unable to classify"]
 
-        for category in waste_categories:
+        for category in categories:
             if category.lower() in response_lower:
+                # Simple negation check
                 category_index = response_lower.find(category.lower())
-                context_before = response_lower[max(0, category_index - 30):category_index]
+                context_before = response_lower[max(0, category_index - 20):category_index]
 
-                if not any(neg in context_before[-10:] for neg in ["not", "cannot", "isn't", "doesn't"]):
+                if not any(neg in context_before[-10:] for neg in ["not", "cannot", "isn't"]):
                     return category
 
-        # Single item material detection
-        recyclable_indicators = ["recyclable", "recycle", "aluminum", "plastic", "glass", "metal", "foil", "cardboard",
-                                 "paper"]
+        # Secondary: Look for explicit mixed garbage warnings from model
+        mixed_warnings = [
+            "multiple garbage types detected",
+            "separate items",
+            "different garbage types",
+            "mixed together"
+        ]
 
-        if any(indicator in response_lower for indicator in recyclable_indicators):
-            if not any(cont in response_lower for cont in food_content_indicators):
-                return "Recyclable Waste"
+        if any(warning in response_lower for warning in mixed_warnings):
+            return "Unable to classify"
 
-        # Food waste indicators
-        food_indicators = ["food", "fruit", "vegetable", "organic", "kitchen waste", "peel", "core", "scraps"]
-        if any(indicator in response_lower for indicator in food_indicators):
+        # Tertiary: Basic material detection (simplified)
+        if any(material in response_lower for material in
+               ["recyclable", "aluminum", "plastic", "glass", "metal", "cardboard"]):
+            # Check for contamination
+            if any(cont in response_lower for cont in ["obvious food", "substantial residue", "chunks", "liquids"]):
+                return "Food/Kitchen Waste"
+            return "Recyclable Waste"
+
+        if any(food in response_lower for food in ["food", "organic", "kitchen", "fruit", "vegetable"]):
             return "Food/Kitchen Waste"
 
-        # Hazardous waste indicators
-        hazardous_indicators = ["battery", "chemical", "medicine", "paint", "toxic", "hazardous"]
-        if any(indicator in response_lower for indicator in hazardous_indicators):
+        if any(hazard in response_lower for hazard in ["battery", "hazardous", "chemical", "toxic"]):
             return "Hazardous Waste"
 
-        # Other waste indicators
-        other_waste_indicators = ["cigarette", "ceramic", "dust", "diaper", "tissue"]
-        if any(indicator in response_lower for indicator in other_waste_indicators):
+        if any(other in response_lower for other in ["cigarette", "ceramic", "styrofoam"]):
             return "Other Waste"
 
         # Non-garbage detection
-        unable_phrases = ["unable to classify", "cannot classify", "not garbage", "not waste"]
-        if any(phrase in response_lower for phrase in unable_phrases):
+        if any(non_garbage in response_lower for non_garbage in ["person", "people", "human", "living", "animal"]):
             return "Unable to classify"
 
-        non_garbage_indicators = ["person", "people", "human", "face", "living", "animal", "pet"]
-        if any(indicator in response_lower for indicator in non_garbage_indicators):
+        # Final fallback - let Gemma 3n's reasoning guide us
+        if any(unable in response_lower for unable in ["unable to classify", "cannot classify", "not garbage"]):
             return "Unable to classify"
 
-        # Default fallback
+        # Default to Unable to classify if unclear
         return "Unable to classify"
 
     def _extract_reasoning(self, response: str) -> str:
