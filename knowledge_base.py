@@ -7,10 +7,11 @@ IMPORTANT: You should ONLY classify items that are actually garbage/waste. If th
 
 **MIXED GARBAGE HANDLING RULES:**
 
-1. **Containers with Food Content**: For any container (bottles, cans, boxes, wrappers) that contains visible food residue or content:
+1. **Containers with Food Content**: For any recyclable container (aluminum cans, glass jars, clean plastic bottles, etc.) that contains visible food residue or content:
    - Classify as "Food/Kitchen Waste" due to contamination risk
    - Always include this warning: "⚠️ Tip: Empty and rinse this container first, then it can be recycled!"
    - Only completely empty and rinsed containers qualify as "Recyclable Waste"
+   - Non-recyclable containers (styrofoam, wax-coated) with food: classify as "Food/Kitchen Waste" with warning: "⚠️ Tip: Remove food waste for composting, then dispose container in general trash"
 
 2. **Multiple Different Garbage Types**: If the image shows multiple different types of garbage mixed together (e.g., electronics with food, batteries with organic waste):
    - Classify as "Unable to classify"
@@ -19,12 +20,12 @@ IMPORTANT: You should ONLY classify items that are actually garbage/waste. If th
 Garbage classification standards:
 
 **Recyclable Waste**:
-- Paper: newspapers, magazines, books, various packaging papers, office paper, advertising flyers, cardboard boxes, copy paper, etc.
-- Plastics: various plastic bags, plastic packaging, disposable plastic food containers and utensils, toothbrushes, cups, water bottles, plastic toys, etc.
-- Metals: aluminum cans, tin cans, toothpaste tubes, metal toys, metal stationery, nails, metal sheets, aluminum foil, etc.
-- Glass: glass bottles, broken glass pieces, mirrors, light bulbs, vacuum flasks, etc.
+- Paper: newspapers, magazines, books, various packaging papers, office paper, advertising flyers, clean cardboard boxes, copy paper, etc.
+- Plastics: clean plastic bottles (#1 PETE, #2 HDPE), clean plastic containers, plastic bags, toothbrushes, cups, water bottles, plastic toys, etc. (NOT styrofoam #6 or heavily coated containers)
+- Metals: clean aluminum cans, clean tin cans, toothpaste tubes, metal toys, metal stationery, nails, metal sheets, aluminum foil, etc.
+- Glass: clean glass bottles and jars, broken glass pieces, mirrors, light bulbs, vacuum flasks, etc.
 - Textiles: old clothing, textile products, shoes, curtains, towels, bags, etc.
-- NOTE: Only clean, empty containers qualify. Contaminated containers go to Food/Kitchen Waste.
+- NOTE: Only clean, empty containers qualify. Contaminated containers go to Food/Kitchen Waste. Wax-coated containers, styrofoam, and multi-material packaging are NOT recyclable.
 
 **Food/Kitchen Waste**:
 - Food scraps: rice, noodles, bread, meat, fish, shrimp shells, crab shells, bones, etc.
@@ -42,6 +43,7 @@ Garbage classification standards:
 
 **Other Waste**:
 - Contaminated non-recyclable paper: toilet paper, diapers, wet wipes, napkins, etc.
+- Non-recyclable containers: styrofoam containers (#6 polystyrene), wax-coated containers, multi-material packaging
 - Cigarette butts, ceramics, dust, disposable tableware (non-plastic)
 - Large bones, hard shells, hard fruit pits (coconut shells, durian shells, walnut shells, corn cobs, etc.)
 - Hair, pet waste, cat litter, etc.
