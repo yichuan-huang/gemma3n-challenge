@@ -5,6 +5,17 @@ class GarbageClassificationKnowledge:
 
 IMPORTANT: You should ONLY classify items that are actually garbage/waste. If the image contains people, living things, furniture, electronics in use, or other non-waste items, you should classify it as "Unable to classify" and explain that it's not garbage.
 
+**MIXED GARBAGE HANDLING RULES:**
+
+1. **Containers with Food Content**: For any container (bottles, cans, boxes, wrappers) that contains visible food residue or content:
+   - Classify as "Food/Kitchen Waste" due to contamination risk
+   - Always include this warning: "⚠️ Tip: Empty and rinse this container first, then it can be recycled!"
+   - Only completely empty and rinsed containers qualify as "Recyclable Waste"
+
+2. **Multiple Different Garbage Types**: If the image shows multiple different types of garbage mixed together (e.g., electronics with food, batteries with organic waste):
+   - Classify as "Unable to classify"
+   - Include warning: "⚠️ Warning: Multiple garbage types detected. Please separate items for proper classification."
+
 Garbage classification standards:
 
 **Recyclable Waste**:
@@ -13,12 +24,14 @@ Garbage classification standards:
 - Metals: aluminum cans, tin cans, toothpaste tubes, metal toys, metal stationery, nails, metal sheets, aluminum foil, etc.
 - Glass: glass bottles, broken glass pieces, mirrors, light bulbs, vacuum flasks, etc.
 - Textiles: old clothing, textile products, shoes, curtains, towels, bags, etc.
+- NOTE: Only clean, empty containers qualify. Contaminated containers go to Food/Kitchen Waste.
 
 **Food/Kitchen Waste**:
 - Food scraps: rice, noodles, bread, meat, fish, shrimp shells, crab shells, bones, etc.
 - Fruit peels and cores: watermelon rinds, apple cores, orange peels, banana peels, nut shells, etc.
 - Plants: withered branches and leaves, flowers, traditional Chinese medicine residue, etc.
 - Expired food: expired canned food, cookies, candy, etc.
+- Contaminated containers: any container with visible food residue or content
 
 **Hazardous Waste**:
 - Batteries: dry batteries, rechargeable batteries, button batteries, and all types of batteries
@@ -39,8 +52,11 @@ Garbage classification standards:
 - Furniture, appliances, electronics in normal use
 - Buildings, landscapes, vehicles
 - Any item that is not intended to be discarded as waste
+- Multiple different garbage types mixed together
 
 Please observe the items in the image carefully according to the above classification standards. If the image shows garbage/waste items, provide accurate garbage classification results. If the image does NOT show garbage/waste (e.g., people, living things, functioning items), classify it as "Unable to classify" and explain why it's not garbage.
+
+For mixed garbage situations, apply the special handling rules above and include appropriate warnings.
 
 Format your response EXACTLY as follows:
 
@@ -61,9 +77,9 @@ Format your response EXACTLY as follows:
     @staticmethod
     def get_category_descriptions():
         return {
-            "Recyclable Waste": "Items that can be processed and reused, including paper, plastic, metal, glass, and textiles",
-            "Food/Kitchen Waste": "Organic waste from food preparation and consumption",
+            "Recyclable Waste": "Items that can be processed and reused, including paper, plastic, metal, glass, and textiles (must be clean and empty)",
+            "Food/Kitchen Waste": "Organic waste from food preparation and consumption, including contaminated containers",
             "Hazardous Waste": "Items containing harmful substances that require special disposal",
             "Other Waste": "Items that don't fit into other categories and go to general waste",
-            "Unable to classify": "Items that are not garbage/waste, such as people, living things, or functioning objects",
+            "Unable to classify": "Items that are not garbage/waste, such as people, living things, functioning objects, or mixed garbage types",
         }
