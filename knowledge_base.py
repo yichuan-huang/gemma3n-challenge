@@ -42,10 +42,11 @@ Garbage classification standards:
 
 Please observe the items in the image carefully according to the above classification standards. If the image shows garbage/waste items, provide accurate garbage classification results. If the image does NOT show garbage/waste (e.g., people, living things, functioning items), classify it as "Unable to classify" and explain why it's not garbage.
 
-Format your response as:
+Format your response EXACTLY as follows:
 
 **Classification**: [Category Name or "Unable to classify"]
-**Reasoning**: [Brief explanation of why this item belongs to this category, or why it cannot be classified as garbage]"""
+**Reasoning**: [Brief explanation of why this item belongs to this category, or why it cannot be classified as garbage]
+**Confidence Score**: [Number from 1-10]"""
 
     @staticmethod
     def get_categories():
