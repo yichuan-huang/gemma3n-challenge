@@ -7,13 +7,55 @@ from config import Config
 from knowledge_base import GarbageClassificationKnowledge
 import re
 
+
+def preprocess_image(image: Image.Image) -> Image.Image:
+    """
+    Preprocess image to meet Gemma3n requirements (512x512)
+    """
+    # Convert to RGB if necessary
+    if image.mode != "RGB":
+        image = image.convert("RGB")
+
+    # Resize to 512x512 as required by Gemma3n
+    target_size = (512, 512)
+
+    # Calculate aspect ratio preserving resize
+    original_width, original_height = image.size
+    aspect_ratio = original_width / original_height
+
+    if aspect_ratio > 1:
+        # Width is larger
+        new_width = target_size[0]
+        new_height = int(target_size[0] / aspect_ratio)
+    else:
+        # Height is larger or equal
+        new_height = target_size[1]
+        new_width = int(target_size[1] * aspect_ratio)
+
+    # Resize image maintaining aspect ratio
+    image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+
+    # Create a new image with target size and paste the resized image
+    processed_image = Image.new(
+        "RGB", target_size, (255, 255, 255)
+    )  # White background
+
+    # Calculate position to center the image
+    x_offset = (target_size[0] - new_width) // 2
+    y_offset = (target_size[1] - new_height) // 2
+
+    processed_image.paste(image, (x_offset, y_offset))
+
+    return processed_image
+
+
 class GarbageClassifier:
     def __init__(self, config: Config = None):
         self.config = config or Config()
         self.knowledge = GarbageClassificationKnowledge()
         self.processor = None
         self.model = None
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # Setup logging
         logging.basicConfig(level=logging.INFO)
@@ -46,46 +88,6 @@ class GarbageClassifier:
             self.logger.error(f"Error loading model: {str(e)}")
             raise
 
-    def preprocess_image(self, image: Image.Image) -> Image.Image:
-        """
-        Preprocess image to meet Gemma3n requirements (512x512)
-        """
-        # Convert to RGB if necessary
-        if image.mode != "RGB":
-            image = image.convert("RGB")
-
-        # Resize to 512x512 as required by Gemma3n
-        target_size = (512, 512)
-
-        # Calculate aspect ratio preserving resize
-        original_width, original_height = image.size
-        aspect_ratio = original_width / original_height
-
-        if aspect_ratio > 1:
-            # Width is larger
-            new_width = target_size[0]
-            new_height = int(target_size[0] / aspect_ratio)
-        else:
-            # Height is larger or equal
-            new_height = target_size[1]
-            new_width = int(target_size[1] * aspect_ratio)
-
-        # Resize image maintaining aspect ratio
-        image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
-
-        # Create a new image with target size and paste the resized image
-        processed_image = Image.new(
-            "RGB", target_size, (255, 255, 255)
-        )  # White background
-
-        # Calculate position to center the image
-        x_offset = (target_size[0] - new_width) // 2
-        y_offset = (target_size[1] - new_height) // 2
-
-        processed_image.paste(image, (x_offset, y_offset))
-
-        return processed_image
-
     def classify_image(self, image: Union[str, Image.Image]) -> Tuple[str, str, int]:
         """
         Classify garbage in the image
@@ -107,7 +109,7 @@ class GarbageClassifier:
                 raise ValueError("Image must be a PIL Image or file path")
 
             # Preprocess image to meet Gemma3n requirements
-            processed_image = self.preprocess_image(image)
+            processed_image = preprocess_image(image)
 
             # Prepare messages with system prompt and user query
             messages = [
