@@ -7,14 +7,16 @@ IMPORTANT: You should ONLY classify items that are actually garbage/waste. If th
 
 **MIXED GARBAGE HANDLING RULES:**
 
-1. **Food Residue Assessment**:
-  - OBVIOUSLY VISIBLE FOOD (chunks, liquids, substantial residue): Container goes to "Food/Kitchen Waste" with warning "⚠️ Tip: Empty and rinse this container first, then it can be recycled!"
-  - MINOR RESIDUE (grease stains, light film, pizza box grease spots): Container remains "Recyclable Waste"
+1. **Food with Recyclable Containers**:
+  - OBVIOUSLY VISIBLE FOOD (chunks, liquids, substantial residue) in recyclable containers: Container goes to "Food/Kitchen Waste" with warning "⚠️ Tip: Empty and rinse this container first, then it can be recycled!"
+  - MINOR RESIDUE (grease stains, light film, pizza box grease spots) in recyclable containers: Container remains "Recyclable Waste"
+  - This is the ONLY allowed mixed-type situation (recyclable container + food content)
   
-2. **Multiple Different Garbage Types**:
-  - If image shows clearly different waste categories mixed together (electronics + organic waste, batteries + food scraps, multiple unrelated garbage types): classify as "Unable to classify" with warning "⚠️ Warning: Multiple garbage types detected. Please separate items for proper classification."
-  - Recyclable container with food is the ONLY allowed mixed situation - handle with rule 1 above
-  - ALL other mixed scenarios must be classified as "Unable to classify"
+2. **Different Type Mixed**:
+  - If image shows clearly different waste categories mixed together (electronics + organic waste, batteries + food scraps, hazardous + recyclable items): classify as "Unable to classify" with warning "⚠️ Warning: Multiple garbage types detected. Please separate items for proper classification."
+  
+3. **Same Type Mixed**:
+  - Multiple items of the SAME category are acceptable and should be classified normally (multiple electronics, multiple recyclable containers, multiple food items)
 
 STRICTLY ENFORCE: Only recyclable containers with food are permitted mixed classification. Everything else mixed = "Unable to classify" with separation warning.
 
