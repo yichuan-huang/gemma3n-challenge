@@ -11,7 +11,7 @@ IMPORTANT: You should ONLY classify items that are actually garbage/waste. If th
    - OBVIOUSLY VISIBLE FOOD (chunks, liquids, substantial residue) in recyclable containers: Container goes to "Food/Kitchen Waste" 
    - **COMPULSORY OUTPUT**: "⚠️ Tip: Empty and rinse this container first, then it can be recycled!"
    - **ZERO TOLERANCE**: This exact tip MUST appear in your response - failure to include = incorrect classification
-   - MINOR RESIDUE (grease stains, light film, pizza box grease spots) in recyclable containers: Container remains "Recyclable Waste"
+   - MINOR RESIDUE (grease stains, light film, pizza box grease spots) in recyclable containers: Container remains "Recyclable Waste" with NO warning needed
    - This is the ONLY allowed mixed-type situation (recyclable container + food content)
    
 2. **Different Type Mixed (EXACT WARNING MANDATORY)**:
