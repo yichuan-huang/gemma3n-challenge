@@ -1,8 +1,11 @@
-<!DOCTYPE html><html lang="en"><head>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com https://huggingface.co https://*.hf.space; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;"><meta charset="UTF-8">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com https://huggingface.co https://*.hf.space; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gemma3n Waste Classification System</title>
-    <style>
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -30,14 +33,15 @@
             width: 100%;
             height: 100%;
             background: white;
-            padding: 40px 60px;
+            padding: 30px 50px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             opacity: 0;
             transform: translateX(100%);
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .slide.active {
@@ -71,11 +75,20 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            padding: 20px 0;
+        }
+
+        /* Special handling for slides with scrollable content */
+        .slide[data-slide="8"] .slide-content {
+            justify-content: flex-start;
+            padding-top: 60px;
+            height: auto;
+            min-height: 100%;
         }
 
         h1 {
             color: #2980b9;
-            font-size: 2.8em;
+            font-size: 2.5em;
             margin-bottom: 20px;
             text-align: center;
             line-height: 1.1;
@@ -83,7 +96,7 @@
 
         h2 {
             color: #2980b9;
-            font-size: 2.2em;
+            font-size: 2em;
             margin-bottom: 25px;
             border-bottom: 3px solid #27ae60;
             padding-bottom: 10px;
@@ -93,13 +106,13 @@
 
         h3 {
             color: #27ae60;
-            font-size: 1.4em;
+            font-size: 1.3em;
             margin: 15px 0 12px 0;
             line-height: 1.3;
         }
 
         .subtitle {
-            font-size: 1.3em;
+            font-size: 1.2em;
             color: #27ae60;
             text-align: center;
             margin-bottom: 10px;
@@ -108,7 +121,7 @@
         }
 
         .tagline {
-            font-size: 1.1em;
+            font-size: 1em;
             color: #666;
             text-align: center;
             font-style: italic;
@@ -124,11 +137,11 @@
 
         li {
             background: #f8f9fa;
-            margin: 8px 0;
-            padding: 12px 18px;
+            margin: 6px 0;
+            padding: 10px 16px;
             border-left: 4px solid #2980b9;
             border-radius: 6px;
-            font-size: 1em;
+            font-size: 0.95em;
             line-height: 1.4;
             position: relative;
             transition: all 0.3s ease;
@@ -149,15 +162,15 @@
 
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
             margin: 20px 0;
         }
 
         .feature-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 25px 20px;
+            padding: 20px 18px;
             border-radius: 12px;
             text-align: center;
             transform: scale(1);
@@ -169,18 +182,18 @@
         }
 
         .feature-icon {
-            font-size: 2.5em;
-            margin-bottom: 12px;
+            font-size: 2.2em;
+            margin-bottom: 10px;
         }
 
         .feature-card h3 {
             color: white;
             margin-bottom: 8px;
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
 
         .feature-card p {
-            font-size: 0.9em;
+            font-size: 0.85em;
             line-height: 1.3;
         }
 
@@ -189,29 +202,29 @@
             justify-content: space-around;
             flex-wrap: wrap;
             margin: 20px 0;
-            gap: 15px;
+            gap: 12px;
         }
 
         .metric {
             background: #2980b9;
             color: white;
-            padding: 18px 15px;
+            padding: 16px 12px;
             border-radius: 12px;
             text-align: center;
-            min-width: 120px;
+            min-width: 110px;
             flex: 1;
-            max-width: 180px;
+            max-width: 160px;
         }
 
         .metric-value {
-            font-size: 1.8em;
+            font-size: 1.6em;
             font-weight: bold;
             display: block;
             line-height: 1;
         }
 
         .metric-label {
-            font-size: 0.9em;
+            font-size: 0.85em;
             opacity: 0.9;
             margin-top: 6px;
             line-height: 1.2;
@@ -220,7 +233,7 @@
         .demo-section {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
-            padding: 25px;
+            padding: 22px;
             border-radius: 15px;
             margin: 15px 0;
             text-align: center;
@@ -229,7 +242,7 @@
         .demo-section h3 {
             color: white;
             margin-bottom: 10px;
-            font-size: 1.3em;
+            font-size: 1.2em;
         }
 
         .demo-section p {
@@ -241,12 +254,12 @@
             display: inline-block;
             background: white;
             color: #333;
-            padding: 12px 20px;
-            margin: 8px;
+            padding: 10px 18px;
+            margin: 6px;
             border-radius: 25px;
             text-decoration: none;
             font-weight: bold;
-            font-size: 0.9em;
+            font-size: 0.85em;
             transition: all 0.3s ease;
         }
 
@@ -261,38 +274,38 @@
             align-items: center;
             margin: 20px 0;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
         }
 
         .flow-step {
             background: #27ae60;
             color: white;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border-radius: 10px;
             text-align: center;
             flex: 1;
-            min-width: 100px;
-            font-size: 0.9em;
+            min-width: 90px;
+            font-size: 0.85em;
             font-weight: bold;
             line-height: 1.2;
         }
 
         .flow-arrow {
-            font-size: 1.5em;
+            font-size: 1.3em;
             color: #2980b9;
-            margin: 0 5px;
+            margin: 0 4px;
             font-weight: bold;
         }
 
         .challenge-solution {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 18px;
             margin: 15px 0;
         }
 
         .challenge, .solution {
-            padding: 20px;
+            padding: 18px;
             border-radius: 8px;
         }
 
@@ -309,7 +322,7 @@
         .challenge h3, .solution h3 {
             margin-top: 0;
             margin-bottom: 10px;
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
 
         .challenge ul, .solution ul {
@@ -319,23 +332,23 @@
         .challenge li, .solution li {
             background: transparent;
             border: none;
-            padding: 4px 0;
-            margin: 4px 0;
-            font-size: 0.9em;
+            padding: 3px 0;
+            margin: 3px 0;
+            font-size: 0.85em;
         }
 
         .future-timeline {
             margin: 15px 0;
-            max-height: 60vh;
-            overflow-y: auto;
+            max-height: none;
+            overflow-y: visible;
         }
 
         .timeline-item {
             background: white;
             border: 2px solid #2980b9;
             border-radius: 10px;
-            padding: 15px;
-            margin: 12px 0;
+            padding: 12px;
+            margin: 10px 0;
             position: relative;
             transition: all 0.3s ease;
         }
@@ -348,24 +361,24 @@
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -10px;
+            left: -8px;
             top: 50%;
             transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             background: #2980b9;
             border-radius: 50%;
         }
 
         .timeline-item h4 {
             color: #2980b9;
-            font-size: 1.1em;
+            font-size: 1em;
             margin-bottom: 6px;
             line-height: 1.2;
         }
 
         .timeline-item p {
-            font-size: 0.9em;
+            font-size: 0.85em;
             line-height: 1.3;
             margin: 0;
         }
@@ -384,7 +397,7 @@
 
         .thank-you h1 {
             color: white;
-            font-size: 3.2em;
+            font-size: 2.8em;
             margin-bottom: 20px;
             line-height: 1.1;
         }
@@ -392,13 +405,13 @@
         .thank-you h2 {
             color: white;
             border-bottom: none;
-            font-size: 1.8em;
+            font-size: 1.6em;
             margin-bottom: 15px;
         }
 
         .thank-you h3 {
             color: white;
-            font-size: 1.4em;
+            font-size: 1.3em;
             line-height: 1.3;
         }
 
@@ -421,115 +434,193 @@
             pointer-events: none;
         }
 
-        /* Responsive adjustments */
-        @media (max-height: 800px) {
+        /* Laptop/Desktop optimizations */
+        @media (max-height: 900px) {
             .slide {
                 padding: 25px 40px;
             }
-            
+
+            .slide-content {
+                height: calc(100vh - 50px);
+            }
+
             h1 {
-                font-size: 2.4em;
+                font-size: 2.2em;
                 margin-bottom: 15px;
             }
-            
+
             h2 {
-                font-size: 1.9em;
+                font-size: 1.8em;
                 margin-bottom: 20px;
             }
-            
+
+            h3 {
+                font-size: 1.2em;
+                margin: 12px 0 10px 0;
+            }
+
             .feature-grid {
                 margin: 15px 0;
             }
-            
+
             .demo-section {
-                padding: 20px;
-                margin: 10px 0;
+                padding: 18px;
+                margin: 12px 0;
             }
-            
-            .future-timeline {
-                max-height: 50vh;
+        }
+
+        @media (max-height: 800px) {
+            .slide {
+                padding: 20px 35px;
+            }
+
+            .slide-content {
+                height: calc(100vh - 40px);
+            }
+
+            h1 {
+                font-size: 2em;
+                margin-bottom: 12px;
+            }
+
+            h2 {
+                font-size: 1.6em;
+                margin-bottom: 18px;
+            }
+
+            h3 {
+                font-size: 1.1em;
+                margin: 10px 0 8px 0;
+            }
+
+            li {
+                padding: 8px 14px;
+                margin: 5px 0;
+                font-size: 0.9em;
+            }
+
+            .feature-card {
+                padding: 16px 14px;
+            }
+
+            .feature-icon {
+                font-size: 1.9em;
+                margin-bottom: 8px;
+            }
+
+            .metrics-container {
+                margin: 15px 0;
+            }
+
+            .metric {
+                padding: 12px 10px;
+            }
+
+            .timeline-item {
+                padding: 10px;
+                margin: 8px 0;
+            }
+
+            .timeline-item h4 {
+                font-size: 0.95em;
+            }
+
+            .timeline-item p {
+                font-size: 0.8em;
             }
         }
 
         @media (max-height: 700px) {
             .slide {
-                padding: 20px 30px;
+                padding: 15px 30px;
             }
-            
+
+            .slide-content {
+                padding: 10px 0;
+                height: calc(100vh - 30px);
+            }
+
             h1 {
-                font-size: 2.2em;
-                margin-bottom: 12px;
+                font-size: 1.8em;
+                margin-bottom: 10px;
             }
-            
+
             h2 {
-                font-size: 1.7em;
+                font-size: 1.4em;
                 margin-bottom: 15px;
             }
-            
+
             h3 {
-                font-size: 1.2em;
-                margin: 10px 0 8px 0;
+                font-size: 1em;
+                margin: 8px 0 6px 0;
             }
-            
+
             li {
-                padding: 8px 15px;
-                margin: 6px 0;
-                font-size: 0.9em;
+                padding: 6px 12px;
+                margin: 4px 0;
+                font-size: 0.85em;
             }
-            
+
             .feature-card {
-                padding: 20px 15px;
+                padding: 14px 12px;
             }
-            
+
             .feature-icon {
-                font-size: 2em;
-                margin-bottom: 8px;
+                font-size: 1.7em;
+                margin-bottom: 6px;
             }
-            
-            .metrics-container {
-                margin: 15px 0;
+
+            .demo-section {
+                padding: 15px;
+                margin: 10px 0;
             }
-            
+
             .metric {
-                padding: 12px 10px;
+                padding: 10px 8px;
             }
-            
-            .future-timeline {
-                max-height: 40vh;
-            }
-            
+
             .timeline-item {
-                padding: 12px;
-                margin: 8px 0;
+                padding: 8px;
+                margin: 6px 0;
+            }
+
+            .timeline-item h4 {
+                font-size: 0.9em;
+                margin-bottom: 4px;
+            }
+
+            .timeline-item p {
+                font-size: 0.75em;
             }
         }
 
+        /* Mobile adjustments */
         @media (max-width: 768px) {
             .slide {
-                padding: 20px 15px;
+                padding: 15px 12px;
             }
 
             h1 {
-                font-size: 2em;
+                font-size: 1.8em;
             }
 
             h2 {
-                font-size: 1.6em;
+                font-size: 1.5em;
             }
 
             .feature-grid {
                 grid-template-columns: 1fr;
-                gap: 15px;
+                gap: 12px;
             }
 
             .challenge-solution {
                 grid-template-columns: 1fr;
-                gap: 15px;
+                gap: 12px;
             }
 
             .architecture-flow {
                 flex-direction: column;
-                gap: 10px;
+                gap: 8px;
             }
 
             .flow-arrow {
@@ -547,6 +638,60 @@
                 font-size: 10px;
             }
         }
+
+        /* Ultra-wide screen adjustments */
+        @media (min-width: 1600px) {
+            .slide-content {
+                max-width: 1300px;
+            }
+        }
+
+        /* Very short screens */
+        @media (max-height: 600px) {
+            .slide {
+                padding: 10px 25px;
+            }
+
+            .slide-content {
+                padding: 5px 0;
+                height: calc(100vh - 20px);
+            }
+
+            h1 {
+                font-size: 1.6em;
+                margin-bottom: 8px;
+            }
+
+            h2 {
+                font-size: 1.3em;
+                margin-bottom: 12px;
+            }
+
+            h3 {
+                font-size: 0.95em;
+                margin: 6px 0 4px 0;
+            }
+
+            li {
+                padding: 5px 10px;
+                margin: 3px 0;
+                font-size: 0.8em;
+            }
+
+            .timeline-item {
+                padding: 6px;
+                margin: 4px 0;
+            }
+
+            .timeline-item h4 {
+                font-size: 0.85em;
+                margin-bottom: 3px;
+            }
+
+            .timeline-item p {
+                font-size: 0.7em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -561,7 +706,7 @@
                 <h1>Waste Classification System</h1>
                 <div class="subtitle">Using Gemma 3n for Image Recognition</div>
                 <div class="tagline">Taking the guesswork out of recycling decisions</div>
-                
+
                 <div class="feature-grid">
                     <div class="feature-card">
                         <div class="feature-icon">🤖</div>
@@ -586,7 +731,7 @@
         <div class="slide" data-slide="1">
             <div class="slide-content">
                 <h2>Why This Matters</h2>
-                
+
                 <h3>The problems we're solving:</h3>
                 <ul>
                     <li>People want to recycle but don't know what goes where</li>
@@ -644,7 +789,7 @@
         <div class="slide" data-slide="3">
             <div class="slide-content">
                 <h2>How It Works Under the Hood</h2>
-                
+
                 <h3>The main pieces:</h3>
                 <ul>
                     <li><strong>Web Interface:</strong> Simple Gradio app that processes images as you upload them</li>
@@ -676,7 +821,7 @@
         <div class="slide" data-slide="4">
             <div class="slide-content">
                 <h2>The Technical Details</h2>
-                
+
                 <h3>What we're working with:</h3>
                 <ul>
                     <li><strong>Model:</strong> Gemma 3n E4B-it (4 billion parameters, efficient memory usage)</li>
@@ -702,46 +847,15 @@
         </div>
 
         <!-- Slide 6: Live Demo -->
-        <!--
         <div class="slide" data-slide="5">
             <div class="slide-content">
                 <h2>Try It Yourself</h2>
-                
-                <div class="demo-section">
-                    <h3>🚀 See It In Action</h3>
-                    <p>Test the system with your own photos and check out how we built it</p>
-                    
-                    <a href="https://huggingface.co/spaces/HMWCS/Gemma3n-challenge-demo" target="_blank" class="demo-link">
-                        🌐 Live Demo
-                    </a>
-                    
-                    <a href="https://github.com/yichuan-huang/gemma3n-challenge" target="_blank" class="demo-link">
-                        💻 Source Code
-                    </a>
-                    
-                    <a href="https://www.kaggle.com/code/yichuanhuang/gemma3n-garbage-classification" target="_blank" class="demo-link">
-                        📓 Development Notes
-                    </a>
-                    
-                    <div style="margin-top: 20px;">
-                        <h3>📊 Behind the Scenes</h3>
-                        <p>The Kaggle notebook shows the full development process, including model experiments and lessons learned</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        -->
 
-        <!-- Slide 6: Live Demo -->
-        <div class="slide" data-slide="5">
-            <div class="slide-content">
-                <h2>Try It Yourself</h2>
-                
-                <div class="demo-section">
+                <div class="demo-section" style="height: 100%; display: flex; flex-direction: column; margin: 0; padding: 15px;">
                     <h3>🚀 See It In Action</h3>
                     <p>Test the system with your own photos right here in the presentation</p>
 
-                    <div style="margin: 20px 0; height: 60vh; border: 2px solid white; border-radius: 10px; overflow: hidden;">
+                    <div style="flex: 1; border: 2px solid white; border-radius: 10px; overflow: hidden;">
                         <iframe
                             src="https://hmwcs-gemma3n-challenge-demo.hf.space"
                             width="100%"
@@ -749,21 +863,6 @@
                             frameborder="0"
                             style="border-radius: 8px;">
                         </iframe>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 15px;">
-                        <a href="https://github.com/yichuan-huang/gemma3n-challenge" target="_blank" class="demo-link">
-                            💻 Source Code
-                        </a>
-                        
-                        <a href="https://www.kaggle.com/code/yichuanhuang/gemma3n-garbage-classification" target="_blank" class="demo-link">
-                            📓 Development Notes
-                        </a>
-                    </div>
-                    
-                    <div style="margin-top: 15px;">
-                        <h3>📊 Behind the Scenes</h3>
-                        <p>The Kaggle notebook shows the full development process, including model experiments and lessons learned</p>
                     </div>
                 </div>
             </div>
@@ -773,7 +872,7 @@
         <div class="slide" data-slide="6">
             <div class="slide-content">
                 <h2>Problems We Hit (And How We Fixed Them)</h2>
-                
+
                 <div class="challenge-solution">
                     <div class="challenge">
                         <h3>🔴 What Went Wrong</h3>
@@ -786,7 +885,7 @@
                             <li>Needed to handle non-waste images safely</li>
                         </ul>
                     </div>
-                    
+
                     <div class="solution">
                         <h3>🟢 How We Solved It</h3>
                         <ul>
@@ -806,7 +905,7 @@
         <div class="slide" data-slide="7">
             <div class="slide-content">
                 <h2>What We Achieved</h2>
-                
+
                 <div class="metrics-container">
                     <div class="metric">
                         <span class="metric-value">~7s</span>
@@ -843,29 +942,29 @@
         <div class="slide" data-slide="8">
             <div class="slide-content">
                 <h2>Future Vision: Smart Waste Stations</h2>
-                
+
                 <h3>Where we want to take this technology:</h3>
                 <div class="future-timeline">
                     <div class="timeline-item">
                         <h4>Smart Public Stations</h4>
                         <p>Deploy this AI into public waste stations with built-in cameras that automatically classify items as people dispose of them</p>
                     </div>
-                    
+
                     <div class="timeline-item">
                         <h4>Zero-Friction Sorting</h4>
                         <p>Just show your item to the station - the camera identifies it automatically and guides you to the right bin</p>
                     </div>
-                    
+
                     <div class="timeline-item">
                         <h4>Universal Access</h4>
                         <p>No apps to download, no phones needed - works for everyone who uses public waste disposal</p>
                     </div>
-                    
+
                     <div class="timeline-item">
                         <h4>High-Impact Deployment</h4>
                         <p>Office buildings, schools, airports, food courts - places where proper sorting can make a real difference</p>
                     </div>
-                    
+
                     <div class="timeline-item">
                         <h4>Network Intelligence</h4>
                         <p>Stations could share learned patterns and adapt to local recycling rules automatically</p>
@@ -882,7 +981,7 @@
                     <br>
                     <h3>Making recycling less confusing,</h3>
                     <h3>one photo at a time</h3>
-                    
+
                     <div style="margin-top: 30px;">
                         <a href="https://huggingface.co/spaces/HMWCS/Gemma3n-challenge-demo" target="_blank" class="demo-link">
                             🚀 Try Demo
@@ -1003,4 +1102,6 @@
                 instructions.classList.add('hidden');
             }
         }, 5000);
-    </script></body></html>
+    </script>
+</body>
+</html>
