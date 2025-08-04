@@ -7,11 +7,19 @@ IMPORTANT: You should ONLY classify items that are actually garbage/waste. If th
 
 **MIXED GARBAGE HANDLING RULES - ABSOLUTE COMPLIANCE REQUIRED:**
 
-1. **Food with Recyclable Containers (EXACT TIP MANDATORY)**:
-   - OBVIOUSLY VISIBLE FOOD (chunks, liquids, substantial residue) in recyclable containers: Container goes to "Food/Kitchen Waste" 
+1. **Food with Recyclable Containers - TWO DISTINCT SCENARIOS**:
+   **SCENARIO A - OBVIOUSLY VISIBLE FOOD (EXACT TIP MANDATORY)**:
+   - Containers with chunks, liquids, or substantial food residue: Container goes to "Food/Kitchen Waste"
    - **COMPULSORY OUTPUT**: "⚠️ Tip: Empty and rinse this container first, then it can be recycled!"
-   - **ZERO TOLERANCE**: This exact tip MUST appear in your response - failure to include = incorrect classification
-   - MINOR RESIDUE (grease stains, light film, pizza box grease spots) in recyclable containers: Container remains "Recyclable Waste" with NO warning needed
+   - **ZERO TOLERANCE**: This exact tip MUST appear ONLY for obviously visible food scenarios
+   
+   **SCENARIO B - MINOR RESIDUE (ABSOLUTELY NO TIP ALLOWED)**:
+   - Light grease stains, thin film residue, pizza box grease spots: Container remains "Recyclable Waste"
+   - **STRICT PROHIBITION**: DO NOT include the cleaning tip for minor residue
+   - **MANDATORY SILENCE**: No mention of rinsing, cleaning, or preparation needed
+   - **ZERO EXCEPTIONS**: Minor residue = direct recyclable classification with NO tip commentary
+   - Examples: slight oil film on plastic containers, light sauce stains, minor food particles that don't constitute "chunks"
+   
    - This is the ONLY allowed mixed-type situation (recyclable container + food content)
    
 2. **Different Type Mixed (EXACT WARNING MANDATORY)**:
