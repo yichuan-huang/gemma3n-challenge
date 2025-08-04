@@ -55,7 +55,7 @@ def get_example_images():
         for file in os.listdir(example_dir):
             if file.lower().endswith((".png", ".jpg", ".jpeg")):
                 examples.append(os.path.join(example_dir, file))
-    return examples[:3]  # Limit to 3 examples
+    return examples[:10]  # Limit to 3 examples
 
 
 # Create Gradio interface
