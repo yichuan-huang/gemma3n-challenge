@@ -1,6 +1,5 @@
 from transformers import AutoProcessor, AutoModelForImageTextToText
 from PIL import Image
-import torch
 import logging
 from typing import Union, Tuple
 from config import Config
